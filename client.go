@@ -2,29 +2,15 @@ package gedis
 
 import (
 	"net"
-	"strconv"
 )
 
 type Client struct {
-	Address string
-	Port    int
-	conn    net.Conn
+	conn net.Conn
 }
 
-func NewClient(address string, port int) *Client {
-	return &Client{
-		Address: address,
-		Port:    port,
-	}
-}
-
-func (c *Client) Connect() error {
-	conn, err := net.Dial("tcp", c.Address+":"+strconv.Itoa(c.Port))
-	if err != nil {
-		return err
-	}
-	c.conn = conn
-	return nil
+func NewClient(address string) (*Client, error) {
+	conn, err := net.Dial("tcp", address)
+	return &Client{conn: conn}, err
 }
 
 func (c *Client) Close() error {
