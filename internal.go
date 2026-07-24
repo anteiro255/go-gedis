@@ -13,6 +13,7 @@ func getResponse(conn net.Conn, timeout time.Duration) (*protocol.Response, erro
 	if err != nil {
 		return nil, err
 	}
+	defer conn.SetReadDeadline(time.Time{})
 
 	var headerBytes [protocol.ResponseHeaderSize]byte
 	_, err = io.ReadFull(conn, headerBytes[:])
@@ -24,9 +25,11 @@ func getResponse(conn net.Conn, timeout time.Duration) (*protocol.Response, erro
 	r.Header = protocol.NewResponseHeaderFromBytes(headerBytes)
 
 	body := make([]byte, r.Header.BodySize)
-	_, err = io.ReadFull(conn, body)
-	if err != nil {
-		return nil, err
+	if r.Header.BodySize > 0 {
+		_, err = io.ReadFull(conn, body)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	r.Body = body
