@@ -26,10 +26,7 @@ func (c *Client) Set(key [protocol.RequestKeySize]byte, value []byte) error {
 	if err != nil {
 		return err
 	}
-	if response.Header.Status != status.OK {
-		return response.Header.Status
-	}
-	return nil
+	return statusToError(response.Header.Status)
 }
 
 func (c *Client) Get(key [protocol.RequestKeySize]byte) ([]byte, error) {
@@ -50,8 +47,8 @@ func (c *Client) Get(key [protocol.RequestKeySize]byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if response.Header.Status != status.OK {
-		return nil, response.Header.Status
+	if err := statusToError(response.Header.Status); err != nil {
+		return nil, err
 	}
 	return response.Body, nil
 }
@@ -72,10 +69,7 @@ func (c *Client) Del(key [protocol.RequestKeySize]byte) error {
 	if err != nil {
 		return err
 	}
-	if response.Header.Status != status.OK {
-		return response.Header.Status
-	}
-	return nil
+	return statusToError(response.Header.Status)
 }
 
 func (c *Client) Exist(key [protocol.RequestKeySize]byte) (bool, error) {
@@ -97,8 +91,8 @@ func (c *Client) Exist(key [protocol.RequestKeySize]byte) (bool, error) {
 	if response.Header.Status == status.NoSuchKey {
 		return false, nil
 	}
-	if response.Header.Status != status.OK {
-		return false, response.Header.Status
+	if err := statusToError(response.Header.Status); err != nil {
+		return false, err
 	}
 	return true, nil
 }
@@ -122,10 +116,7 @@ func (c *Client) TTLSet(key [protocol.RequestKeySize]byte, seconds uint32) error
 	if err != nil {
 		return err
 	}
-	if response.Header.Status != status.OK {
-		return response.Header.Status
-	}
-	return nil
+	return statusToError(response.Header.Status)
 }
 
 func (c *Client) TTLGet(key [protocol.RequestKeySize]byte) (uint32, error) {
@@ -144,8 +135,8 @@ func (c *Client) TTLGet(key [protocol.RequestKeySize]byte) (uint32, error) {
 	if err != nil {
 		return 0, err
 	}
-	if response.Header.Status != status.OK {
-		return 0, response.Header.Status
+	if err := statusToError(response.Header.Status); err != nil {
+		return 0, err
 	}
 	if len(response.Body) < 4 {
 		return 0, nil
@@ -169,10 +160,7 @@ func (c *Client) TTLDel(key [protocol.RequestKeySize]byte) error {
 	if err != nil {
 		return err
 	}
-	if response.Header.Status != status.OK {
-		return response.Header.Status
-	}
-	return nil
+	return statusToError(response.Header.Status)
 }
 
 func (c *Client) TTLExist(key [protocol.RequestKeySize]byte) (bool, error) {
@@ -194,8 +182,8 @@ func (c *Client) TTLExist(key [protocol.RequestKeySize]byte) (bool, error) {
 	if response.Header.Status == status.NoSuchKey {
 		return false, nil
 	}
-	if response.Header.Status != status.OK {
-		return false, response.Header.Status
+	if err := statusToError(response.Header.Status); err != nil {
+		return false, err
 	}
 	return true, nil
 }
